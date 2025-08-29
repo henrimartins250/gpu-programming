@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>moving square</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <canvas  id="game"></canvas>
+</body>
+<script>
+    var canvas = document.getElementById('game');
+var context = canvas.getContext('2d');
+
+
+
+var square = {
+  
+    size: 50,
+    xPos: canvas.width / 2 - 25,
+    yPos: canvas.height / 2 - 25,
+
+    speed: 5,
+    jumpSpeed: 10
+
+};
+
+// Async function for user input: returns true for ArrowRight, false for ArrowLeft
+async function UserInput() {
+    return new Promise(resolve => {
+        function handler(e) {
+            if (e.key === 'ArrowRight') {
+                window.removeEventListener('keydown', handler);
+                resolve(true);
+            } else if (e.key === 'ArrowLeft') {
+                window.removeEventListener('keydown', handler);
+                resolve(false);
+            }
+        }
+        window.addEventListener('keydown', handler);
+    });
+}
+
+function loop() {
+    // clear the canvas
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    // draw the square
+    context.fillStyle = 'blue';
+    context.fillRect(square.xPos, square.yPos, square.size, square.size);
+
+    // update the square's position
+    square.xPos += square.speed;
+
+    // check for user input
+    UserInput().then(direction => {
+        if (direction) {
+            square.speed = Math.abs(square.speed); // move right
+        } else {
+            square.speed = -Math.abs(square.speed); // move left
+        }
+        // request the next frame
+        requestAnimationFrame(loop);
+    });
+}
+
+
+// start the game
+requestAnimationFrame(loop);
+</script>
+</html>
